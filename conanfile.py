@@ -9,7 +9,7 @@ class KieContextConan(ConanFile):
     # Optional metadata
     license = "MIT"
     author = "Kie <qiongxiaozi158@sina.com>"
-    url = "<Package recipe repository url here, for issues about the package>"
+    url = "https://github.com/Kidsunbo/KieContext"
     description = "A wrapper that make multiple context easy for use"
     topics = ("async", "context", "asio")
 
