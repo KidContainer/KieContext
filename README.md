@@ -8,3 +8,19 @@
 
 
 This project is a wrapper for bunch of `boost::asio::io_context`. It follow the per context per thread model.
+
+## Usage
+It's easy to use this project with conan.
+
+First add a new repository to you conan.
+```
+conan remote add kie-kies https://conan.cloudsmith.io/kie/kies/
+```
+
+then add
+```
+kie_context/0.1.0
+```
+to your `conanfile.txt`
+
+After that, feel free to use it.
