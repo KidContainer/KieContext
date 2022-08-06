@@ -10,7 +10,7 @@ add_library(kie_context INTERFACE)
 target_include_directories(kie_context INTERFACE include)
 target_link_libraries(kie_context INTERFACE boost::boost)
 
-option(ENABLE_TEST "if enable test code" ON)
+option(ENABLE_TEST "if enable test code" OFF)
 
 if(ENABLE_TEST)
     include(CTest)
@@ -19,3 +19,4 @@ endif()
 
 install(TARGETS kie_context)
 install(DIRECTORY include/ DESTINATION include)
+install(FILES LICENSE DESTINATION license)

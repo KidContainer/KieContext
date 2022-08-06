@@ -15,7 +15,7 @@ class KieContextConan(ConanFile):
 
     # Binary configuration
     settings = "os", "compiler", "build_type", "arch"
-    exports_sources = "include/*", "CMakeLists.txt"
+    exports_sources = "include/*", "CMakeLists.txt", "LICENSE"
     no_copy_source = True
 
     requires = "boost/1.79.0"
