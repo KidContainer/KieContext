@@ -45,12 +45,19 @@ namespace kie
 
   public:
     /**
+     * @brief The constructor which use CPU number as its concurrency limit. It may throw exception when memory allocation fails.
+     *
+     * @param size How many context should be used.
+     */
+    context() : context(std::thread::hardware_concurrency()) {}
+
+    /**
      * @brief The explicit constructor for context. It may throw exception when memory allocation fails.
      *
      *
      * @param size How many context should be used.
      */
-    explicit context(std::size_t size) : current_idx(size)
+    explicit context(std::size_t size) : current_idx(0)
     {
       for (std::size_t i = 0; i < size; i++)
       {
@@ -119,13 +126,15 @@ namespace kie
     /**
      * @brief Run the context as daemon. It does not block current thread.
      *
+     * @param concurrency_hint. The hint to context how many threads should be used to run. Default to -1, which means per context per thread.
      */
-    void run_as_daemon()
+    void run_as_daemon(std::size_t concurrency_hint = 0)
     {
-      for (std::size_t i = 0; i < all_ctx.size(); i++)
+      concurrency_hint = std::max(all_ctx.size(), concurrency_hint);
+      for (std::size_t i = 0; i < concurrency_hint; i++)
       {
         std::thread([=, this]
-                    { all_ctx[i]->run(); })
+                    { all_ctx[i % all_ctx.size()]->run(); })
             .detach();
       }
     }
@@ -133,15 +142,19 @@ namespace kie
     /**
      * @brief Run the context and block current thread.
      *
+     * 
      * This start the context runtime and serving all the async operation.
+     *
+     * @param concurrency_hint. The hint to context how many threads should be used to run. Default to -1, which means per context per thread. 
      */
-    void run()
+    void run(std::size_t concurrency_hint = 0)
     {
+      concurrency_hint = std::max(all_ctx.size(), concurrency_hint);
       std::vector<std::thread> threads;
-      for (std::size_t i = 0; i < all_ctx.size(); i++)
+      for (std::size_t i = 0; i < concurrency_hint; i++)
       {
         threads.emplace_back([=, this]
-                             { all_ctx[i]->run(); });
+                             { all_ctx[i % all_ctx.size()]->run(); });
       }
 
       for (auto &t : threads)
