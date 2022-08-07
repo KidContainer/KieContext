@@ -85,7 +85,7 @@ namespace kie
      *
      * It use round-robin algorithm to fetch one context.
      */
-    const boost::asio::io_context &get_one() const
+    boost::asio::io_context &get_one()
     {
       const auto &ctx = all_ctx[current_idx++];
       current_idx %= all_ctx.size();
@@ -101,7 +101,7 @@ namespace kie
      *
      * @return A pair of context and existence. If existence is false, the context is the first one, and should not be used.
      */
-    std::tuple<const boost::asio::io_context &, bool> get(std::size_t idx) const
+    std::tuple<boost::asio::io_context &, bool> get(std::size_t idx)
     {
       if (idx >= all_ctx.size())
       {
