@@ -38,10 +38,18 @@ namespace kie
    */
   class context
   {
-
-    std::vector<std::unique_ptr<boost::asio::io_context>> all_ctx;
+    using context_ptr = std::unique_ptr<boost::asio::io_context, void(*)(boost::asio::io_context*)>;
+    std::vector<context_ptr> all_ctx;
     std::vector<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>> guards;
     mutable std::size_t current_idx;
+
+  private:
+
+    static void default_deleter(boost::asio::io_context* ptr){
+      delete ptr;
+    }
+
+    static void noop_deleter(boost::asio::io_context*){}
 
   public:
     /**
@@ -61,9 +69,22 @@ namespace kie
     {
       for (std::size_t i = 0; i < size; i++)
       {
-        all_ctx.emplace_back(std::make_unique<boost::asio::io_context>(1));
+        all_ctx.emplace_back(context_ptr(new boost::asio::io_context(1), default_deleter));
         guards.emplace_back(all_ctx[i]->get_executor());
       }
+    }
+
+    /**
+     * @brief The explicit constructor for context from io_context. It may throw exception when memory allocation fails.
+     *
+     * The caller should keep io_context live longer than this.
+     *
+     * @param ctx The `io_context` that will be wrapped.
+     */
+    explicit context(boost::asio::io_context& ctx) : current_idx(0)
+    {
+      all_ctx.emplace_back(context_ptr(&ctx, noop_deleter));
+      guards.emplace_back(ctx.get_executor());
     }
 
     /**
@@ -118,7 +139,7 @@ namespace kie
      *
      * @return The reference to the underlining pool.
      */
-    const std::vector<std::unique_ptr<boost::asio::io_context>> &get_all() const
+    const std::vector<context_ptr> &get_all() const
     {
       return all_ctx;
     }

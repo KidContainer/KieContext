@@ -21,6 +21,14 @@ void run_as_daemon(){
     std::this_thread::sleep_for(std::chrono::seconds(3));
     ctx2.stop();
     std::cout<<"[KIE] "<<now()<<" ctx2 run_as_daemon stopped"<<std::endl;
+
+    //run with explicit constructor from io_context
+    boost::asio::io_context ctx;
+    kie::context ctx3(ctx);
+    ctx3.run_as_daemon();
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    ctx3.stop();
+    std::cout<<"[KIE] "<<now()<<" ctx3 run_as_daemon stopped"<<std::endl;
 }
 
 void run(){
@@ -43,6 +51,17 @@ void run(){
     }).detach();
     ctx2.run(40);
     std::cout<<"[KIE] "<<now()<<" ctx2 run stopped"<<std::endl;
+
+    //run with explicit context that wrap io_context
+    boost::asio::io_context ctx;
+    kie::context ctx3(ctx);
+    ctx3.get_all();
+    std::thread([&]{
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+        ctx3.stop();
+    }).detach();
+    ctx3.run(40);
+    std::cout<<"[KIE] "<<now()<<" ctx3 run stopped"<<std::endl;
 }
 
 
