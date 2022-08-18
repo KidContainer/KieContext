@@ -9,6 +9,8 @@
 
 This project is a wrapper for bunch of `boost::asio::io_context`. It follow the per context per thread model.
 
+## This project has been merged into [kie_toolbox_cpp](https://github.com/Kidsunbo/kie_toolbox_cpp).
+
 ## Usage
 It's easy to use this project with conan.
 
